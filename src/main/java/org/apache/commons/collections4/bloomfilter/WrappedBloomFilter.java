@@ -22,17 +22,17 @@ import java.util.function.LongPredicate;
 /**
  * An abstract class to assist in implementing Bloom filter decorators.
  *
- * @since 4.5
+ * @since 4.5.0
  */
 public abstract class WrappedBloomFilter implements BloomFilter {
-    final BloomFilter wrapped;
+    private final BloomFilter wrapped;
 
     /**
      * Wraps a Bloom filter.  The wrapped filter is maintained as a reference
      * not a copy.  Changes in one will be reflected in the other.
      * @param bf The Bloom filter.
      */
-    public WrappedBloomFilter(BloomFilter bf) {
+    public WrappedBloomFilter(final BloomFilter bf) {
         this.wrapped = bf;
     }
 
@@ -62,32 +62,27 @@ public abstract class WrappedBloomFilter implements BloomFilter {
     }
 
     @Override
-    public boolean contains(BitMapProducer bitMapProducer) {
-        return wrapped.contains(bitMapProducer);
+    public boolean contains(final BitMapExtractor bitMapExtractor) {
+        return wrapped.contains(bitMapExtractor);
     }
 
     @Override
-    public boolean contains(BloomFilter other) {
+    public boolean contains(final BloomFilter other) {
         return wrapped.contains(other);
     }
 
     @Override
-    public boolean contains(Hasher hasher) {
+    public boolean contains(final Hasher hasher) {
         return wrapped.contains(hasher);
     }
 
     @Override
-    public boolean contains(IndexProducer indexProducer) {
-        return wrapped.contains(indexProducer);
+    public boolean contains(final IndexExtractor indexExtractor) {
+        return wrapped.contains(indexExtractor);
     }
 
     @Override
-    public BloomFilter copy() {
-        return wrapped.copy();
-    }
-
-    @Override
-    public int estimateIntersection(BloomFilter other) {
+    public int estimateIntersection(final BloomFilter other) {
         return wrapped.estimateIntersection(other);
     }
 
@@ -97,28 +92,22 @@ public abstract class WrappedBloomFilter implements BloomFilter {
     }
 
     @Override
-    public int estimateUnion(BloomFilter other) {
+    public int estimateUnion(final BloomFilter other) {
         return wrapped.estimateUnion(other);
-    }
-
-    @Override
-    public boolean forEachBitMap(LongPredicate predicate) {
-        return wrapped.forEachBitMap(predicate);
-    }
-
-    @Override
-    public boolean forEachBitMapPair(BitMapProducer other, LongBiPredicate func) {
-        return wrapped.forEachBitMapPair(other, func);
-    }
-
-    @Override
-    public boolean forEachIndex(IntPredicate predicate) {
-        return wrapped.forEachIndex(predicate);
     }
 
     @Override
     public Shape getShape() {
         return wrapped.getShape();
+    }
+
+    /**
+     * Gets the wrapped BloomFilter.
+     *
+     * @return the wrapped BloomFilter.
+     */
+    protected BloomFilter getWrapped() {
+        return wrapped;
     }
 
     @Override
@@ -127,22 +116,37 @@ public abstract class WrappedBloomFilter implements BloomFilter {
     }
 
     @Override
-    public boolean merge(BitMapProducer bitMapProducer) {
-        return wrapped.merge(bitMapProducer);
+    public boolean merge(final BitMapExtractor bitMapExtractor) {
+        return wrapped.merge(bitMapExtractor);
     }
 
     @Override
-    public boolean merge(BloomFilter other) {
+    public boolean merge(final BloomFilter other) {
         return wrapped.merge(other);
     }
 
     @Override
-    public boolean merge(Hasher hasher) {
+    public boolean merge(final Hasher hasher) {
         return wrapped.merge(hasher);
     }
 
     @Override
-    public boolean merge(IndexProducer indexProducer) {
-        return wrapped.merge(indexProducer);
+    public boolean merge(final IndexExtractor indexExtractor) {
+        return wrapped.merge(indexExtractor);
+    }
+
+    @Override
+    public boolean processBitMapPairs(final BitMapExtractor other, final LongBiPredicate func) {
+        return wrapped.processBitMapPairs(other, func);
+    }
+
+    @Override
+    public boolean processBitMaps(final LongPredicate predicate) {
+        return wrapped.processBitMaps(predicate);
+    }
+
+    @Override
+    public boolean processIndices(final IntPredicate predicate) {
+        return wrapped.processIndices(predicate);
     }
 }

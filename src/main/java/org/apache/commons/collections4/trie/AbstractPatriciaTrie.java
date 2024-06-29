@@ -774,12 +774,10 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
             Map.Entry<K, V> e = null;
             if (fromKey == null) {
                 e = firstEntry();
+            } else if (fromInclusive) {
+                e = ceilingEntry(fromKey);
             } else {
-                if (fromInclusive) {
-                    e = ceilingEntry(fromKey);
-                } else {
-                    e = higherEntry(fromKey);
-                }
+                e = higherEntry(fromKey);
             }
 
             final K first = e != null ? e.getKey() : null;
@@ -814,12 +812,10 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
             final Map.Entry<K, V> e;
             if (toKey == null) {
                 e = lastEntry();
+            } else if (toInclusive) {
+                e = floorEntry(toKey);
             } else {
-                if (toInclusive) {
-                    e = floorEntry(toKey);
-                } else {
-                    e = lowerEntry(toKey);
-                }
+                e = lowerEntry(toKey);
             }
 
             final K last = e != null ? e.getKey() : null;
@@ -976,7 +972,10 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
     }
 
     /**
-     *  A {@link org.apache.commons.collections4.Trie} is a set of {@link TrieEntry} nodes.
+     * A {@link org.apache.commons.collections4.Trie} is a set of {@link TrieEntry} nodes.
+     *
+     * @param <K> the key type.
+     * @param <V> the value type.
      */
     protected static class TrieEntry<K, V> extends BasicEntry<K, V> {
 
@@ -2058,16 +2057,20 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
     }
 
     /**
-     * Reads the content of the stream.
+     * Deserializes an instance from an ObjectInputStream.
+     *
+     * @param in The source ObjectInputStream.
+     * @throws IOException            Any of the usual Input/Output related exceptions.
+     * @throws ClassNotFoundException A class of a serialized object cannot be found.
      */
     @SuppressWarnings("unchecked") // This will fail at runtime if the stream is incorrect
-    private void readObject(final ObjectInputStream stream) throws IOException, ClassNotFoundException{
-        stream.defaultReadObject();
+    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
         root = new TrieEntry<>(null, null, -1);
-        final int size = stream.readInt();
-        for (int i = 0; i < size; i++){
-            final K k = (K) stream.readObject();
-            final V v = (V) stream.readObject();
+        final int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            final K k = (K) in.readObject();
+            final V v = (V) in.readObject();
             put(k, v);
         }
     }
@@ -2314,10 +2317,8 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
             if (selectR(h.left, h.bitIndex, key, lengthInBits, reference)) {
                 return selectR(h.right, h.bitIndex, key, lengthInBits, reference);
             }
-        } else {
-            if (selectR(h.right, h.bitIndex, key, lengthInBits, reference)) {
-                return selectR(h.left, h.bitIndex, key, lengthInBits, reference);
-            }
+        } else if (selectR(h.right, h.bitIndex, key, lengthInBits, reference)) {
+            return selectR(h.left, h.bitIndex, key, lengthInBits, reference);
         }
         return false;
     }
@@ -2432,14 +2433,17 @@ public abstract class AbstractPatriciaTrie<K, V> extends AbstractBitwiseTrie<K, 
     }
 
     /**
-     * Writes the content to the stream for serialization.
+     * Serializes this object to an ObjectOutputStream.
+     *
+     * @param out the target ObjectOutputStream.
+     * @throws IOException thrown when an I/O errors occur writing to the target stream.
      */
-    private void writeObject(final ObjectOutputStream stream) throws IOException{
-        stream.defaultWriteObject();
-        stream.writeInt(this.size());
+    private void writeObject(final ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeInt(this.size());
         for (final Entry<K, V> entry : entrySet()) {
-            stream.writeObject(entry.getKey());
-            stream.writeObject(entry.getValue());
+            out.writeObject(entry.getKey());
+            out.writeObject(entry.getValue());
         }
     }
 

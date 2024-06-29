@@ -24,22 +24,35 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class WrappedBloomFilterTest extends AbstractBloomFilterTest<WrappedBloomFilter> {
 
     @Override
-    protected WrappedBloomFilter createEmptyFilter(Shape shape) {
+    protected WrappedBloomFilter createEmptyFilter(final Shape shape) {
         return new WrappedBloomFilter(new DefaultBloomFilterTest.SparseDefaultBloomFilter(shape)) {
+            @Override
+            public BloomFilter copy() {
+                final BloomFilter result = new DefaultBloomFilterTest.SparseDefaultBloomFilter(shape);
+                result.merge(getWrapped());
+                return result;
+            }
         };
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 34})
-    public void testCharacteristics(int characteristics) {
-        Shape shape = getTestShape();
-        BloomFilter inner = new DefaultBloomFilterTest.SparseDefaultBloomFilter(shape) {
+    public void testCharacteristics(final int characteristics) {
+        final Shape shape = getTestShape();
+        final BloomFilter inner = new DefaultBloomFilterTest.SparseDefaultBloomFilter(shape) {
             @Override
             public int characteristics() {
                 return characteristics;
             }
         };
-        WrappedBloomFilter underTest = new WrappedBloomFilter(inner) {};
+        final WrappedBloomFilter underTest = new WrappedBloomFilter(inner) {
+            @Override
+            public BloomFilter copy() {
+                final BloomFilter result = new DefaultBloomFilterTest.SparseDefaultBloomFilter(shape);
+                result.merge(getWrapped());
+                return result;
+            }
+        };
         assertEquals(characteristics, underTest.characteristics());
     }
 }

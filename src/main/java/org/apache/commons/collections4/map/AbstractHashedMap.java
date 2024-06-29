@@ -67,9 +67,15 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
      * @param <V> the type of the values in the map
      */
     protected static class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
+
         /** The parent map */
         private final AbstractHashedMap<K, V> parent;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param parent The parent map.
+         */
         protected EntrySet(final AbstractHashedMap<K, V> parent) {
             this.parent = parent;
         }
@@ -112,6 +118,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return parent.size();
         }
     }
+
     /**
      * EntrySet iterator.
      *
@@ -120,6 +127,11 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
      */
     protected static class EntrySetIterator<K, V> extends HashIterator<K, V> implements Iterator<Map.Entry<K, V>> {
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param parent The parent map.
+         */
         protected EntrySetIterator(final AbstractHashedMap<K, V> parent) {
             super(parent);
         }
@@ -129,6 +141,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return super.nextEntry();
         }
     }
+
     /**
      * HashEntry used to store the data.
      * <p>
@@ -136,17 +149,22 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
      * then you will not be able to access the protected fields.
      * The {@code entryXxx()} methods on {@code AbstractHashedMap} exist
      * to provide the necessary access.
+     * </p>
      *
      * @param <K> the type of the keys
      * @param <V> the type of the values
      */
     protected static class HashEntry<K, V> implements Map.Entry<K, V>, KeyValue<K, V> {
+
         /** The next entry in the hash chain */
         protected HashEntry<K, V> next;
+
         /** The hash code of the key */
         protected int hashCode;
+
         /** The key */
         protected Object key;
+
         /** The value */
         protected Object value;
 
@@ -206,7 +224,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
         }
     }
     /**
-     * Base Iterator
+     * Base Iterator.
      *
      * @param <K> the type of the keys in the map
      * @param <V> the type of the values in the map
@@ -215,12 +233,16 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
 
         /** The parent map */
         private final AbstractHashedMap<K, V> parent;
+
         /** The current index into the array of buckets */
         private int hashIndex;
+
         /** The last returned entry */
         private HashEntry<K, V> last;
+
         /** The next entry */
         private HashEntry<K, V> next;
+
         /** The modification count expected */
         private int expectedModCount;
 
@@ -251,7 +273,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             }
             final HashEntry<K, V> newCurrent = next;
             if (newCurrent == null)  {
-                throw new NoSuchElementException(AbstractHashedMap.NO_NEXT_ENTRY);
+                throw new NoSuchElementException(NO_NEXT_ENTRY);
             }
             final HashEntry<K, V>[] data = parent.data;
             int i = hashIndex;
@@ -267,7 +289,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
 
         public void remove() {
             if (last == null) {
-                throw new IllegalStateException(AbstractHashedMap.REMOVE_INVALID);
+                throw new IllegalStateException(REMOVE_INVALID);
             }
             if (parent.modCount != expectedModCount) {
                 throw new ConcurrentModificationException();
@@ -285,6 +307,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return "Iterator[]";
         }
     }
+
     /**
      * MapIterator implementation.
      *
@@ -301,7 +324,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
         public K getKey() {
             final HashEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.GETKEY_INVALID);
+                throw new IllegalStateException(GETKEY_INVALID);
             }
             return current.getKey();
         }
@@ -310,7 +333,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
         public V getValue() {
             final HashEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.GETVALUE_INVALID);
+                throw new IllegalStateException(GETVALUE_INVALID);
             }
             return current.getValue();
         }
@@ -324,11 +347,12 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
         public V setValue(final V value) {
             final HashEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.SETVALUE_INVALID);
+                throw new IllegalStateException(SETVALUE_INVALID);
             }
             return current.setValue(value);
         }
     }
+
     /**
      * KeySet implementation.
      *
@@ -387,6 +411,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return super.nextEntry().getKey();
         }
     }
+
     /**
      * Values implementation.
      *
@@ -420,6 +445,7 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return parent.size();
         }
     }
+
     /**
      * Values iterator.
      *
@@ -437,19 +463,34 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
             return super.nextEntry().getValue();
         }
     }
+
+    /** Exception message. */
     protected static final String NO_NEXT_ENTRY = "No next() entry in the iteration";
+
+    /** Exception message. */
     protected static final String NO_PREVIOUS_ENTRY = "No previous() entry in the iteration";
 
+    /** Exception message. */
     protected static final String REMOVE_INVALID = "remove() can only be called once after next()";
+
+    /** Exception message. */
     protected static final String GETKEY_INVALID = "getKey() can only be called after next() and before remove()";
+
+    /** Exception message. */
     protected static final String GETVALUE_INVALID = "getValue() can only be called after next() and before remove()";
+
+    /** Exception message. */
     protected static final String SETVALUE_INVALID = "setValue() can only be called after next() and before remove()";
+
     /** The default capacity to use */
     protected static final int DEFAULT_CAPACITY = 16;
+
     /** The default threshold to use */
     protected static final int DEFAULT_THRESHOLD = 12;
+
     /** The default load factor to use */
     protected static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
     /** The maximum capacity allowed */
     protected static final int MAXIMUM_CAPACITY = 1 << 30;
 
@@ -1026,10 +1067,8 @@ public class AbstractHashedMap<K, V> extends AbstractMap<K, V> implements Iterab
                     if (map.get(key) != null || !map.containsKey(key)) {
                         return false;
                     }
-                } else {
-                    if (!value.equals(map.get(key))) {
-                        return false;
-                    }
+                } else if (!value.equals(map.get(key))) {
+                    return false;
                 }
             }
         } catch (final ClassCastException | NullPointerException ignored) {

@@ -280,12 +280,12 @@ public class CollectionUtilsTest extends MockTestCase {
 
         final Collection<String> strings = Arrays.asList("a", "b", "c");
         final StringBuilder result = new StringBuilder();
-        result.append(CollectionUtils.forAllButLastDo(strings, (Closure<String>) input -> result.append(input+";")));
+        result.append(CollectionUtils.forAllButLastDo(strings, (Closure<String>) input -> result.append(input + ";")));
         assertEquals("a;b;c", result.toString());
 
         final Collection<String> oneString = Arrays.asList("a");
         final StringBuilder resultOne = new StringBuilder();
-        resultOne.append(CollectionUtils.forAllButLastDo(oneString, (Closure<String>) input -> resultOne.append(input+";")));
+        resultOne.append(CollectionUtils.forAllButLastDo(oneString, (Closure<String>) input -> resultOne.append(input + ";")));
         assertEquals("a", resultOne.toString());
         assertNull(CollectionUtils.forAllButLastDo(strings, (Closure<String>) null)); // do not remove cast
         assertNull(CollectionUtils.forAllButLastDo((Collection<String>) null, (Closure<String>) null)); // do not remove cast
@@ -596,7 +596,7 @@ public class CollectionUtilsTest extends MockTestCase {
 
         final List<Integer> combinedList = new ArrayList<>(collectionD);
         combinedList.addAll(collectionE);
-        combinedList.sort(null);
+        Collections.sort(combinedList);
 
         assertEquals(combinedList, result2, "Merge two lists 2");
 
@@ -640,7 +640,7 @@ public class CollectionUtilsTest extends MockTestCase {
         final Set<Integer> combinedSet = new HashSet<>(collectionD);
         combinedSet.addAll(collectionE);
         final List<Integer> combinedList = new ArrayList<>(combinedSet);
-        combinedList.sort(null);
+        Collections.sort(combinedList);
 
         assertEquals(combinedList, result2, "Merge two lists 2 - ignore duplicates");
     }

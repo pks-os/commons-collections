@@ -98,7 +98,7 @@ public abstract class AbstractMultiValuedMapTest<K, V> extends AbstractObjectTes
             final int cpk = getSampleCountPerKey();
             final Collection<V>[] colArr = new Collection[maxK];
             for (int i = 0; i < maxK; i++) {
-                List<V> coll = new ArrayList<>(cpk);
+                final List<V> coll = new ArrayList<>(cpk);
                 for (int j = 0; j < cpk; j++) {
                     coll.add(sampleValues[i * cpk + j]);
                 }
@@ -933,10 +933,7 @@ public abstract class AbstractMultiValuedMapTest<K, V> extends AbstractObjectTes
     @Test
     public void testKeysBagIterator() {
         final MultiValuedMap<K, V> map = makeFullMap();
-        final Collection<K> col = new ArrayList<>();
-        for (K element : map.keys()) {
-            col.add(element);
-        }
+        final Collection<K> col = new ArrayList<>(map.keys());
         final Bag<K> bag = new HashBag<>(col);
         final int maxK = getSampleKeySize();
         for (int k = 0; k < maxK; k++) {
@@ -1340,7 +1337,7 @@ public abstract class AbstractMultiValuedMapTest<K, V> extends AbstractObjectTes
     }
 
     @Test
-    public void testToString(){
+    public void testToString() {
         assumeTrue(isAddSupported());
         final MultiValuedMap<K, V> map = makeObject();
         map.put((K) "A", (V) "X");
@@ -1349,18 +1346,11 @@ public abstract class AbstractMultiValuedMapTest<K, V> extends AbstractObjectTes
         map.put((K) "B", (V) "U");
         map.put((K) "B", (V) "V");
         map.put((K) "B", (V) "W");
-        assertTrue(
-            "{A=[X, Y, Z], B=[U, V, W]}".equals(map.toString()) ||
-            "{B=[U, V, W], A=[X, Y, Z]}".equals(map.toString())
-        );
+        assertTrue("{A=[X, Y, Z], B=[U, V, W]}".equals(map.toString()) || "{B=[U, V, W], A=[X, Y, Z]}".equals(map.toString()));
 
         final MultiValuedMap<K, V> originalNull = null;
-        assertThrows(NullPointerException.class, () -> map.putAll(originalNull),
-                "expecting NullPointerException");
-        assertTrue(
-            "{A=[X, Y, Z], B=[U, V, W]}".equals(map.toString()) ||
-            "{B=[U, V, W], A=[X, Y, Z]}".equals(map.toString())
-        );
+        assertThrows(NullPointerException.class, () -> map.putAll(originalNull), "expecting NullPointerException");
+        assertTrue("{A=[X, Y, Z], B=[U, V, W]}".equals(map.toString()) || "{B=[U, V, W], A=[X, Y, Z]}".equals(map.toString()));
 
         map.remove("A");
         map.remove("B");

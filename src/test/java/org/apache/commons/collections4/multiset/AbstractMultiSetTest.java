@@ -169,8 +169,7 @@ public abstract class AbstractMultiSetTest<T> extends AbstractCollectionTest<T> 
      */
     @Override
     public Collection<T> makeConfirmedCollection() {
-        final ArrayList<T> list = new ArrayList<>();
-        return list;
+        return new ArrayList<>();
     }
 
     /**
@@ -203,14 +202,14 @@ public abstract class AbstractMultiSetTest<T> extends AbstractCollectionTest<T> 
 
     @Override
     public void resetEmpty() {
-        this.setCollection(makeObject());
-        this.setConfirmed(makeConfirmedCollection());
+        setCollection(makeObject());
+        setConfirmed(makeConfirmedCollection());
     }
 
     @Override
     public void resetFull() {
-        this.setCollection(makeFullCollection());
-        this.setConfirmed(makeConfirmedFullCollection());
+        setCollection(makeFullCollection());
+        setConfirmed(makeConfirmedFullCollection());
     }
 
     /**

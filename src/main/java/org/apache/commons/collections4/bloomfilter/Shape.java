@@ -81,7 +81,7 @@ package org.apache.commons.collections4.bloomfilter;
  * @see <a href="https://hur.st/bloomfilter">Bloom Filter calculator</a>
  * @see <a href="https://en.wikipedia.org/wiki/Bloom_filter">Bloom filter
  * [Wikipedia]</a>
- * @since 4.5
+ * @since 4.5.0
  */
 public final class Shape {
 
@@ -483,7 +483,7 @@ public final class Shape {
          * (number of indexes) is less than or equal to 2*number of bit maps the
          * cardinality is sparse within the shape.
          */
-        return cardinality <= BitMap.numberOfBitMaps(getNumberOfBits()) * 2;
+        return cardinality <= BitMaps.numberOfBitMaps(getNumberOfBits()) * 2;
     }
 
     @Override

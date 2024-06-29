@@ -32,6 +32,35 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<E> {
 
+    private static class DefaultAbstractLinkedListForJava21<E> extends AbstractLinkedListForJava21<E> {
+        DefaultAbstractLinkedListForJava21() {
+            init();
+        }
+
+        /**
+         * Deserializes an instance from an ObjectInputStream.
+         *
+         * @param in The source ObjectInputStream.
+         * @throws IOException            Any of the usual Input/Output related exceptions.
+         * @throws ClassNotFoundException A class of a serialized object cannot be found.
+         */
+        private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            doReadObject(in);
+        }
+
+        /**
+         * Serializes this object to an ObjectOutputStream.
+         *
+         * @param out the target ObjectOutputStream.
+         * @throws IOException thrown when an I/O errors occur writing to the target stream.
+         */
+        private void writeObject(final ObjectOutputStream out) throws IOException {
+            out.defaultWriteObject();
+            doWriteObject(out);
+        }
+    }
+
     public DefaultAbstractLinkedListForJava21Test() {
         super(DefaultAbstractLinkedListForJava21Test.class.getSimpleName());
     }
@@ -41,10 +70,29 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         for (int i = 0; i < list.size; i++) {
             assertEquals(list.getNode(i, false).next, list.getNode(i + 1, true));
             if (i < list.size - 1) {
-                assertEquals(list.getNode(i + 1, false).previous,
-                    list.getNode(i, false));
+                assertEquals(list.getNode(i + 1, false).previous, list.getNode(i, false));
             }
         }
+    }
+
+    @Override
+    public AbstractLinkedListForJava21<E> getCollection() {
+        return (AbstractLinkedListForJava21<E>) super.getCollection();
+    }
+
+    @Override
+    public String getCompatibilityVersion() {
+        return null;
+    }
+
+    @Override
+    public List<E> makeObject() {
+        return new DefaultAbstractLinkedListForJava21<>();
+    }
+
+    @Override
+    protected boolean skipSerializedCanonicalTests() {
+        return true;
     }
 
     @Test
@@ -55,7 +103,8 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         if (!isAddSupported()) {
             try {
                 list.addFirst(null);
-            } catch (final UnsupportedOperationException ex) {}
+            } catch (final UnsupportedOperationException ex) {
+            }
         }
 
         list.addFirst((E) "value1");
@@ -88,20 +137,16 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         final AbstractLinkedListForJava21<E> list = getCollection();
         // get marker
         assertEquals(list.getNode(0, true).previous, list.getNode(0, true).next);
-        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(0, false),
-                "Expecting IndexOutOfBoundsException.");
-        list.addAll( Arrays.asList((E[]) new String[]{"value1", "value2"}));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(0, false), "Expecting IndexOutOfBoundsException.");
+        list.addAll(Arrays.asList((E[]) new String[] { "value1", "value2" }));
         checkNodes();
         list.addFirst((E) "value0");
         checkNodes();
         list.removeNode(list.getNode(1, false));
         checkNodes();
-        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(2, false),
-                "Expecting IndexOutOfBoundsException.");
-        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(-1, false),
-                "Expecting IndexOutOfBoundsException.");
-        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(3, true),
-                "Expecting IndexOutOfBoundsException.");
+        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(2, false), "Expecting IndexOutOfBoundsException.");
+        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(-1, false), "Expecting IndexOutOfBoundsException.");
+        assertThrows(IndexOutOfBoundsException.class, () -> list.getNode(3, true), "Expecting IndexOutOfBoundsException.");
     }
 
     @Test
@@ -112,7 +157,8 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         if (!isRemoveSupported()) {
             try {
                 list.removeFirst();
-            } catch (final UnsupportedOperationException ex) {}
+            } catch (final UnsupportedOperationException ex) {
+            }
         }
 
         list.addAll(Arrays.asList((E[]) new String[] { "value1", "value2" }));
@@ -137,7 +183,8 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         if (!isRemoveSupported()) {
             try {
                 list.removeLast();
-            } catch (final UnsupportedOperationException ex) {}
+            } catch (final UnsupportedOperationException ex) {
+            }
         }
 
         list.addAll(Arrays.asList((E[]) new String[] { "value1", "value2" }));
@@ -178,30 +225,10 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         checkNodes();
     }
 
-    @Override
-    public String getCompatibilityVersion() {
-        return null;
-    }
-
-    @Override
-    protected boolean skipSerializedCanonicalTests() {
-        return true;
-    }
-
-    @Override
-    public AbstractLinkedListForJava21<E> getCollection() {
-        return (AbstractLinkedListForJava21<E>) super.getCollection();
-    }
-
-    @Override
-    public List<E> makeObject() {
-        return new DefaultAbstractLinkedListForJava21<>();
-    }
-
     @Test
     @SuppressWarnings("unchecked")
     public void testSubList() {
-        List<E> list = makeObject();
+        final List<E> list = makeObject();
         list.add((E) "A");
         list.add((E) "B");
         list.add((E) "C");
@@ -220,7 +247,7 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
     @Test
     @SuppressWarnings("unchecked")
     public void testSubListAddBegin() {
-        List<E> list = makeObject();
+        final List<E> list = makeObject();
         list.add((E) "A");
         list.add((E) "B");
         list.add((E) "C");
@@ -239,7 +266,7 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
     @Test
     @SuppressWarnings("unchecked")
     public void testSubListAddEnd() {
-        List<E> list = makeObject();
+        final List<E> list = makeObject();
         list.add((E) "A");
         list.add((E) "B");
         list.add((E) "C");
@@ -258,7 +285,7 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
     @Test
     @SuppressWarnings("unchecked")
     public void testSubListAddMiddle() {
-        List<E> list = makeObject();
+        final List<E> list = makeObject();
         list.add((E) "A");
         list.add((E) "B");
         list.add((E) "C");
@@ -277,7 +304,7 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
     @Test
     @SuppressWarnings("unchecked")
     public void testSubListRemove() {
-        List<E> list = makeObject();
+        final List<E> list = makeObject();
         list.add((E) "A");
         list.add((E) "B");
         list.add((E) "C");
@@ -296,21 +323,5 @@ public class DefaultAbstractLinkedListForJava21Test<E> extends AbstractListTest<
         sublist.clear();
         assertEquals("[]", sublist.toString());
         assertEquals("[A, E]", list.toString());
-    }
-
-    private static class DefaultAbstractLinkedListForJava21<E> extends AbstractLinkedListForJava21<E> {
-        DefaultAbstractLinkedListForJava21() {
-            init();
-        }
-
-        private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            doReadObject(in);
-        }
-
-        private void writeObject(final ObjectOutputStream out) throws IOException {
-            out.defaultWriteObject();
-            doWriteObject(out);
-        }
     }
 }

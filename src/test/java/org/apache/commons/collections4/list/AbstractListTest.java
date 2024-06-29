@@ -110,16 +110,16 @@ public abstract class AbstractListTest<E> extends AbstractCollectionTest<E> {
         @Override
         public void resetEmpty() {
             outer.resetFull();
-            this.setCollection(outer.getCollection().subList(4, 4));
-            this.setConfirmed(outer.getConfirmed().subList(4, 4));
+            setCollection(outer.getCollection().subList(4, 4));
+            setConfirmed(outer.getConfirmed().subList(4, 4));
         }
 
         @Override
         public void resetFull() {
             outer.resetFull();
             final int size = outer.getConfirmed().size();
-            this.setCollection(outer.getCollection().subList(3, size - 3));
-            this.setConfirmed(outer.getConfirmed().subList(3, size - 3));
+            setCollection(outer.getCollection().subList(3, size - 3));
+            setConfirmed(outer.getConfirmed().subList(3, size - 3));
         }
 
         @Override
@@ -353,8 +353,7 @@ public abstract class AbstractListTest<E> extends AbstractCollectionTest<E> {
      */
     @Override
     public Collection<E> makeConfirmedCollection() {
-        final ArrayList<E> list = new ArrayList<>();
-        return list;
+        return new ArrayList<>();
     }
 
     /**
@@ -818,11 +817,13 @@ public abstract class AbstractListTest<E> extends AbstractCollectionTest<E> {
         resetFull();
         try {
             getCollection().listIterator(-1);
-        } catch (final IndexOutOfBoundsException ex) {}
+        } catch (final IndexOutOfBoundsException ex) {
+        }
         resetFull();
         try {
             getCollection().listIterator(getCollection().size() + 1);
-        } catch (final IndexOutOfBoundsException ex) {}
+        } catch (final IndexOutOfBoundsException ex) {
+        }
         resetFull();
         for (int i = 0; i <= getConfirmed().size(); i++) {
             forwardTest(getCollection().listIterator(i), i);

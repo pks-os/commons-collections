@@ -405,7 +405,7 @@ public class LRUMap<K, V>
     }
 
     /**
-     * Read the map in using a custom routine.
+     * Deserializes the map in using a custom routine.
      *
      * @param in the input stream
      * @throws IOException if an error occurs while reading from the stream
@@ -492,10 +492,8 @@ public class LRUMap<K, V>
             reuseEntry(entry, hashIndex, hashCode, key, value);
             addEntry(entry, hashIndex);
         } catch (final NullPointerException ex) {
-            throw new IllegalStateException(
-                    "NPE, entry=" + entry + " entryIsHeader=" + (entry==header) +
-                    " key=" + key + " value=" + value + " size=" + size + " maxSize=" + maxSize +
-                    " This should not occur if your keys are immutable, and you have used synchronization properly.");
+            throw new IllegalStateException("NPE, entry=" + entry + " entryIsHeader=" + (entry == header) + " key=" + key + " value=" + value + " size=" + size
+                    + " maxSize=" + maxSize + " This should not occur if your keys are immutable, and you have used synchronization properly.");
         }
     }
 
@@ -515,10 +513,10 @@ public class LRUMap<K, V>
     }
 
     /**
-     * Write the map out using a custom routine.
+     * Serializes this object to an ObjectOutputStream.
      *
-     * @param out  the output stream
-     * @throws IOException if an error occurs while writing to the stream
+     * @param out the target ObjectOutputStream.
+     * @throws IOException thrown when an I/O errors occur writing to the target stream.
      */
     private void writeObject(final ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

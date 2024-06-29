@@ -23,6 +23,7 @@ import org.apache.commons.collections4.Predicate;
 /**
  * Predicate implementation that returns true if the input is not null.
  *
+ * @param <T> the type of the input to the predicate.
  * @since 3.0
  */
 public final class NotNullPredicate<T> implements Predicate<T>, Serializable {
@@ -62,6 +63,11 @@ public final class NotNullPredicate<T> implements Predicate<T>, Serializable {
         return object != null;
     }
 
+    /**
+     * Returns the singleton instance.
+     *
+     * @return the singleton instance.
+     */
     private Object readResolve() {
         return INSTANCE;
     }

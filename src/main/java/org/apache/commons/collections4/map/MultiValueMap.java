@@ -94,6 +94,13 @@ public class MultiValueMap<K, V> extends AbstractMapDecorator<K, Object> impleme
             }
         }
 
+        /**
+         * Deserializes an instance from an ObjectInputStream.
+         *
+         * @param in The source ObjectInputStream.
+         * @throws IOException            Any of the usual Input/Output related exceptions.
+         * @throws ClassNotFoundException A class of a serialized object cannot be found.
+         */
         private void readObject(final ObjectInputStream is) throws IOException, ClassNotFoundException {
             is.defaultReadObject();
             // ensure that the de-serialized class is a Collection, COLLECTIONS-580
@@ -475,7 +482,7 @@ public class MultiValueMap<K, V> extends AbstractMapDecorator<K, Object> impleme
     }
 
     /**
-     * Read the map in using a custom routine.
+     * Deserializes the map in using a custom routine.
      *
      * @param in  the input stream
      * @throws IOException if an error occurs while reading from the stream
@@ -559,10 +566,10 @@ public class MultiValueMap<K, V> extends AbstractMapDecorator<K, Object> impleme
     }
 
     /**
-     * Write the map out using a custom routine.
+     * Serializes this object to an ObjectOutputStream.
      *
-     * @param out  the output stream
-     * @throws IOException if an error occurs while writing to the stream
+     * @param out the target ObjectOutputStream.
+     * @throws IOException thrown when an I/O errors occur writing to the target stream.
      * @since 4.0
      */
     private void writeObject(final ObjectOutputStream out) throws IOException {

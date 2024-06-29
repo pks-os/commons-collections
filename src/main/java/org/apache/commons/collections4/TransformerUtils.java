@@ -380,7 +380,7 @@ public class TransformerUtils {
             preds[i] = EqualPredicate.<I>equalPredicate(entry.getKey());
             trs[i++] = entry.getValue();
         }
-        return TransformerUtils.switchTransformer(preds, trs, def);
+        return switchTransformer(preds, trs, def);
     }
 
     /**
@@ -480,6 +480,8 @@ public class TransformerUtils {
     /**
      * This class is not normally instantiated.
      */
-    private TransformerUtils() {}
+    private TransformerUtils() {
+        // empty
+    }
 
 }

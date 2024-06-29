@@ -70,6 +70,9 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
     /**
      * EntrySet iterator.
+     *
+     * @param <K> the key type.
+     * @param <V> the value type.
      */
     protected static class EntrySetIterator<K, V> extends LinkIterator<K, V> implements
             OrderedIterator<Map.Entry<K, V>>, ResettableIterator<Map.Entry<K, V>> {
@@ -91,6 +94,8 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
     /**
      * KeySet iterator.
+     *
+     * @param <K> the key type.
      */
     protected static class KeySetIterator<K> extends LinkIterator<K, Object> implements
             OrderedIterator<K>, ResettableIterator<K> {
@@ -118,6 +123,10 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
      * then you will not be able to access the protected fields.
      * The {@code entryXxx()} methods on {@code AbstractLinkedMap} exist
      * to provide the necessary access.
+     * </p>
+     *
+     * @param <K> the key type.
+     * @param <V> the value type.
      */
     protected static class LinkEntry<K, V> extends HashEntry<K, V> {
         /** The entry before this one in the order */
@@ -140,6 +149,9 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
     /**
      * Base Iterator that iterates in link order.
+     *
+     * @param <K> the key type.
+     * @param <V> the value type.
      */
     protected abstract static class LinkIterator<K, V> {
 
@@ -175,7 +187,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
                 throw new ConcurrentModificationException();
             }
             if (next == parent.header)  {
-                throw new NoSuchElementException(AbstractHashedMap.NO_NEXT_ENTRY);
+                throw new NoSuchElementException(NO_NEXT_ENTRY);
             }
             last = next;
             next = next.after;
@@ -188,7 +200,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
             }
             final LinkEntry<K, V> previous = next.before;
             if (previous == parent.header)  {
-                throw new NoSuchElementException(AbstractHashedMap.NO_PREVIOUS_ENTRY);
+                throw new NoSuchElementException(NO_PREVIOUS_ENTRY);
             }
             next = previous;
             last = previous;
@@ -197,7 +209,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
         public void remove() {
             if (last == null) {
-                throw new IllegalStateException(AbstractHashedMap.REMOVE_INVALID);
+                throw new IllegalStateException(REMOVE_INVALID);
             }
             if (parent.modCount != expectedModCount) {
                 throw new ConcurrentModificationException();
@@ -223,6 +235,9 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
     /**
      * MapIterator implementation.
+     *
+     * @param <K> the key type.
+     * @param <V> the value type.
      */
     protected static class LinkMapIterator<K, V> extends LinkIterator<K, V> implements
             OrderedMapIterator<K, V>, ResettableIterator<K> {
@@ -235,7 +250,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
         public K getKey() {
             final LinkEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.GETKEY_INVALID);
+                throw new IllegalStateException(GETKEY_INVALID);
             }
             return current.getKey();
         }
@@ -244,7 +259,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
         public V getValue() {
             final LinkEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.GETVALUE_INVALID);
+                throw new IllegalStateException(GETVALUE_INVALID);
             }
             return current.getValue();
         }
@@ -263,7 +278,7 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
         public V setValue(final V value) {
             final LinkEntry<K, V> current = currentEntry();
             if (current == null) {
-                throw new IllegalStateException(AbstractHashedMap.SETVALUE_INVALID);
+                throw new IllegalStateException(SETVALUE_INVALID);
             }
             return current.setValue(value);
         }
@@ -271,6 +286,8 @@ public abstract class AbstractLinkedMap<K, V> extends AbstractHashedMap<K, V> im
 
     /**
      * Values iterator.
+     *
+     * @param <V> the value type.
      */
     protected static class ValuesIterator<V> extends LinkIterator<Object, V> implements
             OrderedIterator<V>, ResettableIterator<V> {

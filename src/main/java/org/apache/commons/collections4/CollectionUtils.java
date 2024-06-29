@@ -74,8 +74,8 @@ public class CollectionUtils {
          * @param b  the second collection
          */
         CardinalityHelper(final Iterable<? extends O> a, final Iterable<? extends O> b) {
-            cardinalityA = CollectionUtils.<O>getCardinalityMap(a);
-            cardinalityB = CollectionUtils.<O>getCardinalityMap(b);
+            cardinalityA = getCardinalityMap(a);
+            cardinalityB = getCardinalityMap(b);
         }
 
         /**
@@ -217,34 +217,34 @@ public class CollectionUtils {
     /**
      * The index value when an element is not found in a collection or array: {@code -1}.
      *
-     * @since 4.5
+     * @since 4.5.0
      */
     public static final int INDEX_NOT_FOUND = -1;
     /**
      * Default prefix used while converting an Iterator to its String representation.
      *
-     * @since 4.5
+     * @since 4.5.0
      */
     public static final String DEFAULT_TOSTRING_PREFIX = "[";
 
     /**
      * Default suffix used while converting an Iterator to its String representation.
      *
-     * @since 4.5
+     * @since 4.5.0
      */
     public static final String DEFAULT_TOSTRING_SUFFIX = "]";
 
     /**
      * A String for Colon  (":").
      *
-     * @since 4.5
+     * @since 4.5.0
      */
     public static final String COLON = ":";
 
     /**
      * A String for Comma (",").
      *
-     * @since 4.5
+     * @since 4.5.0
      */
     public static final String COMMA = ",";
 
@@ -778,7 +778,7 @@ public class CollectionUtils {
      * @return an empty collection if the argument is {@code null}
      */
     public static <T> Collection<T> emptyIfNull(final Collection<T> collection) {
-        return collection == null ? CollectionUtils.<T>emptyCollection() : collection;
+        return collection == null ? emptyCollection() : collection;
     }
 
     /**
@@ -1128,7 +1128,7 @@ public class CollectionUtils {
      * @param equator  the equator used for generate hashCode
      * @return the hash code of the input collection using the hash method of an equator
      * @throws NullPointerException if the equator is {@code null}
-     * @since 4.5
+     * @since 4.5.0
      */
     public static <E> int hashCode(final Collection<? extends E> collection,
             final Equator<? super E> equator) {
@@ -1328,7 +1328,7 @@ public class CollectionUtils {
     public static boolean isProperSubCollection(final Collection<?> a, final Collection<?> b) {
         Objects.requireNonNull(a, "a");
         Objects.requireNonNull(b, "b");
-        return a.size() < b.size() && CollectionUtils.isSubCollection(a, b);
+        return a.size() < b.size() && isSubCollection(a, b);
     }
 
     /**
@@ -1548,7 +1548,7 @@ public class CollectionUtils {
      * @param count  the specified number to remove, can't be less than 1
      * @return collection of elements that removed from the input collection
      * @throws NullPointerException if input is null
-     * @since 4.5
+     * @since 4.5.0
      */
     public static <E> Collection<E> removeCount(final Collection<E> input, int startIndex, int count) {
         Objects.requireNonNull(input, "input");
@@ -1589,7 +1589,7 @@ public class CollectionUtils {
      * @param endIndex  the end index (exclusive) to remove, must not be less than startIndex
      * @return collection of elements that removed from the input collection
      * @throws NullPointerException if input is null
-     * @since 4.5
+     * @since 4.5.0
      */
     public static <E> Collection<E> removeRange(final Collection<E> input, final int startIndex, final int endIndex) {
         Objects.requireNonNull(input, "input");
@@ -1599,7 +1599,7 @@ public class CollectionUtils {
         if (input.size() < endIndex) {
             throw new IndexOutOfBoundsException("The end index can't be greater than the size of collection.");
         }
-        return CollectionUtils.removeCount(input, startIndex, endIndex - startIndex);
+        return removeCount(input, startIndex, endIndex - startIndex);
     }
 
     /**
@@ -2151,5 +2151,7 @@ public class CollectionUtils {
     /**
      * Don't allow instances.
      */
-    private CollectionUtils() {}
+    private CollectionUtils() {
+        // empty
+    }
 }

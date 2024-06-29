@@ -19,8 +19,8 @@ package org.apache.commons.collections4.bloomfilter;
 import java.util.Arrays;
 
 /**
- * Provides functions to assist in IndexProducer creation and manipulation.
- * @see IndexProducer
+ * Provides functions to assist in IndexExtractor creation and manipulation.
+ * @see IndexExtractor
  */
 final class IndexUtils {
 
@@ -37,11 +37,15 @@ final class IndexUtils {
      */
     static int[] ensureCapacityForAdd(final int[] array, final int index) {
         if (index >= array.length) {
-            return Arrays.copyOf(array, (int) Math.min(IndexUtils.MAX_ARRAY_SIZE, Math.max(array.length * 2L, index + 1)));
+            return Arrays.copyOf(array, (int) Math.min(MAX_ARRAY_SIZE, Math.max(array.length * 2L, index + 1)));
         }
         return array;
     }
 
-    // do not instantiate
-    private IndexUtils() {}
+    /**
+     *  Don't instantiate.
+     */
+    private IndexUtils() {
+        // empty
+    }
 }
