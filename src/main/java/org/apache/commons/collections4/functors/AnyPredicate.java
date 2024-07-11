@@ -29,6 +29,7 @@ import org.apache.commons.collections4.Predicate;
  * threw an exception.
  * </p>
  *
+ * @param <T> the type of the input to the predicate.
  * @since 3.0
  */
 public final class AnyPredicate<T> extends AbstractQuantifierPredicate<T> {
@@ -101,9 +102,9 @@ public final class AnyPredicate<T> extends AbstractQuantifierPredicate<T> {
      * @return true if any decorated predicate return true
      */
     @Override
-    public boolean evaluate(final T object) {
+    public boolean test(final T object) {
         for (final Predicate<? super T> iPredicate : iPredicates) {
-            if (iPredicate.evaluate(object)) {
+            if (iPredicate.test(object)) {
                 return true;
             }
         }

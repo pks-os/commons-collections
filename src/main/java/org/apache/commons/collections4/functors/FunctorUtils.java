@@ -18,6 +18,8 @@ package org.apache.commons.collections4.functors;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.Predicate;
@@ -47,7 +49,7 @@ final class FunctorUtils {
 
     /**
      * A very simple method that coerces Predicate<? super T> to Predicate<T>.
-     * Due to the {@link Predicate#evaluate(T)} method, Predicate<? super T> is
+     * Due to the {@link Predicate#test(T)} method, Predicate<? super T> is
      * able to be coerced to Predicate<T> without casting issues.
      * <p>This method exists
      * simply as centralised documentation and atomic unchecked warning
@@ -94,7 +96,7 @@ final class FunctorUtils {
 
     /**
      * Clone the predicates to ensure that the internal reference can't be messed with.
-     * Due to the {@link Predicate#evaluate(T)} method, Predicate<? super T> is
+     * Due to the {@link Predicate#test(T)} method, Predicate<? super T> is
      * able to be coerced to Predicate<T> without casting issues.
      *
      * @param predicates  the predicates to copy
@@ -123,14 +125,14 @@ final class FunctorUtils {
     }
 
     /**
-     * Validate the closures to ensure that all is well.
+     * Validates the consumers to ensure that all is well.
      *
-     * @param closures  the closures to validate
+     * @param consumers  the consumers to validate.
      */
-    static void validate(final Closure<?>... closures) {
-        Objects.requireNonNull(closures, "closures");
-        for (int i = 0; i < closures.length; i++) {
-            if (closures[i] == null) {
+    static void validate(final Consumer<?>... consumers) {
+        Objects.requireNonNull(consumers, "closures");
+        for (int i = 0; i < consumers.length; i++) {
+            if (consumers[i] == null) {
                 throw new NullPointerException("closures[" + i + "]");
             }
         }
@@ -163,7 +165,7 @@ final class FunctorUtils {
      *
      * @param predicates  the predicates to validate
      */
-    static void validate(final Predicate<?>... predicates) {
+    static void validate(final java.util.function.Predicate<?>... predicates) {
         Objects.requireNonNull(predicates, "predicates");
         for (int i = 0; i < predicates.length; i++) {
             if (predicates[i] == null) {
@@ -175,13 +177,13 @@ final class FunctorUtils {
     /**
      * Validate method
      *
-     * @param transformers  the transformers to validate
+     * @param functions  the transformers to validate
      */
-    static void validate(final Transformer<?, ?>... transformers) {
-        Objects.requireNonNull(transformers, "transformers");
-        for (int i = 0; i < transformers.length; i++) {
-            if (transformers[i] == null) {
-                throw new NullPointerException("transformers[" + i + "]");
+    static void validate(final Function<?, ?>... functions) {
+        Objects.requireNonNull(functions, "functions");
+        for (int i = 0; i < functions.length; i++) {
+            if (functions[i] == null) {
+                throw new NullPointerException("functions[" + i + "]");
             }
         }
     }

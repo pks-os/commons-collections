@@ -673,7 +673,7 @@ public class IteratorUtils {
         if (iterator != null) {
             while (iterator.hasNext()) {
                 final E element = iterator.next();
-                if (predicate.evaluate(element)) {
+                if (predicate.test(element)) {
                     return element;
                 }
             }
@@ -712,11 +712,9 @@ public class IteratorUtils {
      */
     public static <E> void forEach(final Iterator<E> iterator, final Closure<? super E> closure) {
         Objects.requireNonNull(closure, "closure");
-
         if (iterator != null) {
             while (iterator.hasNext()) {
-                final E element = iterator.next();
-                closure.execute(element);
+                closure.accept(iterator.next());
             }
         }
     }
@@ -742,7 +740,7 @@ public class IteratorUtils {
                 if (!iterator.hasNext()) {
                     return element;
                 }
-                closure.execute(element);
+                closure.accept(element);
             }
         }
         return null;
@@ -862,7 +860,7 @@ public class IteratorUtils {
         if (iterator != null) {
             for (int index = 0; iterator.hasNext(); index++) {
                 final E element = iterator.next();
-                if (predicate.evaluate(element)) {
+                if (predicate.test(element)) {
                     return index;
                 }
             }
@@ -937,7 +935,7 @@ public class IteratorUtils {
         if (iterator != null) {
             while (iterator.hasNext()) {
                 final E element = iterator.next();
-                if (!predicate.evaluate(element)) {
+                if (!predicate.test(element)) {
                     return false;
                 }
             }
