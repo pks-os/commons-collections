@@ -21,9 +21,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.Transformer;
 
 /**
  * Internal utilities for functors.
@@ -33,26 +31,11 @@ import org.apache.commons.collections4.Transformer;
 final class FunctorUtils {
 
     /**
-     * A very simple method that coerces Closure<? super T> to Closure<T>.
-     * <p>This method exists
-     * simply as centralized documentation and atomic unchecked warning
-     * suppression.
-     *
-     * @param <T> the type of object the returned closure should "accept"
-     * @param closure the closure to coerce.
-     * @return the coerced closure.
-     */
-    @SuppressWarnings("unchecked")
-    static <T> Closure<T> coerce(final Closure<? super T> closure) {
-        return (Closure<T>) closure;
-    }
-
-    /**
      * A very simple method that coerces Predicate<? super T> to Predicate<T>.
      * Due to the {@link Predicate#test(T)} method, Predicate<? super T> is
      * able to be coerced to Predicate<T> without casting issues.
      * <p>This method exists
-     * simply as centralised documentation and atomic unchecked warning
+     * simply as centralized documentation and atomic unchecked warning
      * suppression.
      *
      * @param <T> the type of object the returned predicate should "accept"
@@ -60,14 +43,14 @@ final class FunctorUtils {
      * @return the coerced predicate.
      */
     @SuppressWarnings("unchecked")
-    static <T> Predicate<T> coerce(final Predicate<? super T> predicate) {
-        return (Predicate<T>) predicate;
+    static <R extends java.util.function.Predicate<T>, P extends java.util.function.Predicate<? super T>, T> R coerce(final P predicate) {
+        return (R) predicate;
     }
 
     /**
      * A very simple method that coerces Transformer<? super I, ? extends O> to Transformer<I, O>.
      * <p>This method exists
-     * simply as centralised documentation and atomic unchecked warning
+     * simply as centralized documentation and atomic unchecked warning
      * suppression.
      *
      * @param <I> the type of object the returned transformer should "accept"
@@ -76,22 +59,22 @@ final class FunctorUtils {
      * @return the coerced transformer.
      */
     @SuppressWarnings("unchecked")
-    static <I, O> Transformer<I, O> coerce(final Transformer<? super I, ? extends O> transformer) {
-        return (Transformer<I, O>) transformer;
+    static <R extends Function<I, O>, P extends Function<? super I, ? extends O>, I, O> R coerce(final P transformer) {
+        return (R) transformer;
     }
 
     /**
-     * Clone the closures to ensure that the internal reference can't be messed with.
+     * Clones the consumers to ensure that the internal references can't be updated.
      *
-     * @param closures  the closures to copy
-     * @return the cloned closures
+     * @param consumers  the consumers to copy.
+     * @return the cloned consumers.
      */
     @SuppressWarnings("unchecked")
-    static <E> Closure<E>[] copy(final Closure<? super E>... closures) {
-        if (closures == null) {
+    static <T extends Consumer<?>> T[] copy(final T... consumers) {
+        if (consumers == null) {
             return null;
         }
-        return (Closure<E>[]) closures.clone();
+        return consumers.clone();
     }
 
     /**
@@ -103,25 +86,47 @@ final class FunctorUtils {
      * @return the cloned predicates
      */
     @SuppressWarnings("unchecked")
-    static <T> Predicate<T>[] copy(final Predicate<? super T>... predicates) {
+    static <T extends java.util.function.Predicate<?>> T[] copy(final T... predicates) {
         if (predicates == null) {
             return null;
         }
-        return (Predicate<T>[]) predicates.clone();
+        return predicates.clone();
     }
 
     /**
-     * Copy method
+     * Copy method.
      *
      * @param transformers  the transformers to copy
      * @return a clone of the transformers
      */
     @SuppressWarnings("unchecked")
-    static <I, O> Transformer<I, O>[] copy(final Transformer<? super I, ? extends O>... transformers) {
+    static <T extends Function<?, ?>> T[] copy(final T... transformers) {
         if (transformers == null) {
             return null;
         }
-        return (Transformer<I, O>[]) transformers.clone();
+        return transformers.clone();
+    }
+
+    /**
+     * Validate the predicates to ensure that all is well.
+     *
+     * @param predicates  the predicates to validate
+     * @return predicate array
+     */
+    static <T> Predicate<? super T>[] validate(final Collection<? extends java.util.function.Predicate<? super T>> predicates) {
+        Objects.requireNonNull(predicates, "predicates");
+        // convert to array like this to guarantee iterator() ordering
+        @SuppressWarnings("unchecked") // OK
+        final Predicate<? super T>[] preds = new Predicate[predicates.size()];
+        int i = 0;
+        for (final java.util.function.Predicate<? super T> predicate : predicates) {
+            preds[i] = (Predicate<? super T>) predicate;
+            if (preds[i] == null) {
+                throw new NullPointerException("predicates[" + i + "]");
+            }
+            i++;
+        }
+        return preds;
     }
 
     /**
@@ -139,25 +144,17 @@ final class FunctorUtils {
     }
 
     /**
-     * Validate the predicates to ensure that all is well.
+     * Validate method
      *
-     * @param predicates  the predicates to validate
-     * @return predicate array
+     * @param functions  the transformers to validate
      */
-    static <T> Predicate<? super T>[] validate(final Collection<? extends Predicate<? super T>> predicates) {
-        Objects.requireNonNull(predicates, "predicates");
-        // convert to array like this to guarantee iterator() ordering
-        @SuppressWarnings("unchecked") // OK
-        final Predicate<? super T>[] preds = new Predicate[predicates.size()];
-        int i = 0;
-        for (final Predicate<? super T> predicate : predicates) {
-            preds[i] = predicate;
-            if (preds[i] == null) {
-                throw new NullPointerException("predicates[" + i + "]");
+    static void validate(final Function<?, ?>... functions) {
+        Objects.requireNonNull(functions, "functions");
+        for (int i = 0; i < functions.length; i++) {
+            if (functions[i] == null) {
+                throw new NullPointerException("functions[" + i + "]");
             }
-            i++;
         }
-        return preds;
     }
 
     /**
@@ -170,20 +167,6 @@ final class FunctorUtils {
         for (int i = 0; i < predicates.length; i++) {
             if (predicates[i] == null) {
                 throw new NullPointerException("predicates[" + i + "]");
-            }
-        }
-    }
-
-    /**
-     * Validate method
-     *
-     * @param functions  the transformers to validate
-     */
-    static void validate(final Function<?, ?>... functions) {
-        Objects.requireNonNull(functions, "functions");
-        for (int i = 0; i < functions.length; i++) {
-            if (functions[i] == null) {
-                throw new NullPointerException("functions[" + i + "]");
             }
         }
     }

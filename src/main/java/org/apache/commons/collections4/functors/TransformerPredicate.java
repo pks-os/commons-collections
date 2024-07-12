@@ -60,6 +60,16 @@ public final class TransformerPredicate<T> extends AbstractPredicate<T> implemen
     }
 
     /**
+     * Gets the transformer.
+     *
+     * @return the transformer
+     * @since 3.1
+     */
+    public Transformer<? super T, Boolean> getTransformer() {
+        return iTransformer;
+    }
+
+    /**
      * Evaluates the predicate returning the result of the decorated transformer.
      *
      * @param object  the input object
@@ -68,22 +78,12 @@ public final class TransformerPredicate<T> extends AbstractPredicate<T> implemen
      */
     @Override
     public boolean test(final T object) {
-        final Boolean result = iTransformer.transform(object);
+        final Boolean result = iTransformer.apply(object);
         if (result == null) {
             throw new FunctorException(
                     "Transformer must return an instanceof Boolean, it was a null object");
         }
         return result.booleanValue();
-    }
-
-    /**
-     * Gets the transformer.
-     *
-     * @return the transformer
-     * @since 3.1
-     */
-    public Transformer<? super T, Boolean> getTransformer() {
-        return iTransformer;
     }
 
 }

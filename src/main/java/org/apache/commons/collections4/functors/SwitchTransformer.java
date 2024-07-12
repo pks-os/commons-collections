@@ -164,7 +164,7 @@ public class SwitchTransformer<I, O> implements Transformer<I, O>, Serializable 
      * @since 3.1
      */
     public Predicate<? super I>[] getPredicates() {
-        return FunctorUtils.<I>copy(iPredicates);
+        return FunctorUtils.copy(iPredicates);
     }
 
     /**
@@ -174,7 +174,7 @@ public class SwitchTransformer<I, O> implements Transformer<I, O>, Serializable 
      * @since 3.1
      */
     public Transformer<? super I, ? extends O>[] getTransformers() {
-        return FunctorUtils.<I, O>copy(iTransformers);
+        return FunctorUtils.copy(iTransformers);
     }
 
     /**
@@ -188,10 +188,10 @@ public class SwitchTransformer<I, O> implements Transformer<I, O>, Serializable 
     public O transform(final I input) {
         for (int i = 0; i < iPredicates.length; i++) {
             if (iPredicates[i].test(input)) {
-                return iTransformers[i].transform(input);
+                return iTransformers[i].apply(input);
             }
         }
-        return iDefault.transform(input);
+        return iDefault.apply(input);
     }
 
 }
