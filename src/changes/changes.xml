@@ -36,6 +36,7 @@
     <action type="fix" dev="ggregory" due-to="Dávid Szigecsán. Gary Gregory">Increase test coverage for ListUtils #517.</action>
     <action type="fix" dev="ggregory" due-to="Dávid Szigecsán">Use the Junit (Jupiter) API #518.</action>
     <!-- ADD -->
+    <action type="add" dev="ggregory" due-to="Dávid Szigecsán">LayerManager.Builder implements Supplier.</action>
     <!-- UPDATE -->
     <action issue="COLLECTIONS-857" type="update" dev="ggregory" due-to="Claude Warren">Update bloom filter documentation #508.</action>
     <action issue="COLLECTIONS-857" type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.17.0 to 1.17.1 #514.</action>
@@ -43,6 +44,7 @@
     <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 71 to 73.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.hamcrest:hamcrest from 2.2 to 3.0 #522, #532.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.google.guava:guava-testlib from 33.2.1-jre to 33.3.0-jre #531.</action>
+    <action type="update" dev="ggregory" due-to="Gary Gregory">Bump MathJax from 2.7.2 to 2.7.9.</action>
   </release>
   <release version="4.5.0-M2" date="2024-06-15" description="This milestone release requires Java 8 and adds the package `org.apache.commons.collections4.bloomfilter`.">
      <!-- ADD -->
