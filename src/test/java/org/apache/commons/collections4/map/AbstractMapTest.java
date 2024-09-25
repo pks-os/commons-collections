@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections4.AbstractObjectTest;
 import org.apache.commons.collections4.BulkTest;
@@ -1115,6 +1117,21 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
     }
 
     /**
+     * Tests {@link Map#forEach(java.util.function.BiConsumer)}.
+     */
+    @Test
+    public void testForEach() {
+        resetFull();
+        AtomicInteger i = new AtomicInteger();
+        getMap().forEach((k, v) -> {
+            assertTrue(getMap().containsKey(k));
+            assertTrue(getMap().containsValue(v));
+            i.incrementAndGet();
+        });
+        assertEquals(i.get(), getMap().size());
+    }
+
+    /**
      * Compare the current serialized form of the Map against the canonical version in SCM.
      */
     @Test
@@ -1384,6 +1401,37 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
     }
 
     /**
+     * Tests {@link Map#getOrDefault(Object, Object)}.
+     */
+    @Test
+    public void testMapGetOrDefault() {
+        resetEmpty();
+        final K[] keys = getSampleKeys();
+        final V[] values = getSampleValues();
+        for (final K key : keys) {
+            assertNull(getMap().getOrDefault(key, null));
+        }
+        final K[] otherKeys = getOtherKeys();
+        final V[] otherValues = getOtherValues();
+        for (int i = 0; i < otherKeys.length; i++) {
+            final K otherKey = otherKeys[i];
+            assertNull(getMap().getOrDefault(otherKey, null));
+            final V otherValue = otherValues[i];
+            if (getMap().containsKey(otherKey)) {
+                assertEquals(getMap().get(otherKey), getMap().getOrDefault(otherKey, otherValue));
+            } else {
+                assertEquals(otherValue, getMap().getOrDefault(otherKey, otherValue));
+            }
+        }
+        // LazyMap does not like this check:
+        // verify();
+        resetFull();
+        for (int i = 0; i < keys.length; i++) {
+            assertEquals(values[i], getMap().getOrDefault(keys[i], values[i]));
+        }
+    }
+
+    /**
      * Tests Map.hashCode()
      */
     @Test
@@ -1544,6 +1592,110 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
     }
 
     /**
+     * Tests {@link Map#putIfAbsent(Object, Object)}.
+     */
+    @Test
+    public void testMapPutIfAbsent() {
+        resetEmpty();
+        final K[] keys = getSampleKeys();
+        final V[] values = getSampleValues();
+        final V[] newValues = getNewSampleValues();
+        if (isPutAddSupported()) {
+            for (int i = 0; i < keys.length; i++) {
+                final K key = keys[i];
+                final V value = values[i];
+                final Object o = getMap().putIfAbsent(key, value);
+                getConfirmed().putIfAbsent(key, value);
+                verify();
+                assertNull(o, "First map.putIfAbsent should return null");
+                assertTrue(getMap().containsKey(key), "Map should contain key after putIfAbsent");
+                assertTrue(getMap().containsValue(value), "Map should contain value after putIfAbsent");
+            }
+            if (isPutChangeSupported()) {
+                // Piggyback on isPutChangeSupported() for putIfAbsent with a caveat for null values.
+                for (int i = 0; i < keys.length; i++) {
+                    final K key = keys[i];
+                    final V newValue = newValues[i];
+                    final boolean newValueAlready = getMap().containsValue(newValue);
+                    final V prevValue = getMap().get(key);
+                    final Object oldValue = getMap().putIfAbsent(key, newValue);
+                    getConfirmed().putIfAbsent(key, newValue);
+                    verify();
+                    final V arrValue = values[i];
+                    assertEquals(arrValue, oldValue, "Map.putIfAbsent should return previous value when changed");
+                    assertEquals(prevValue, oldValue, "Map.putIfAbsent should return previous value when changed");
+                    if (prevValue == null) {
+                        assertEquals(newValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                    } else {
+                        assertEquals(oldValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                    }
+                    assertTrue(getMap().containsKey(key), "Map should still contain key after putIfAbsent when changed");
+                    if (newValueAlready && newValue != null) {
+                        // TODO The test fixture already contain a null value, so we condition this assertion
+                        assertFalse(getMap().containsValue(newValue),
+                                String.format("[%,d] Map at '%s' shouldn't contain new value '%s' after putIfAbsent when changed", i, key, newValue));
+                    }
+                    // if duplicates are allowed, we're not guaranteed that the value
+                    // no longer exists, so don't try checking that.
+                    if (!isAllowDuplicateValues() && newValueAlready && newValue != null) {
+                        assertFalse(getMap().containsValue(arrValue),
+                                String.format("Map should not contain old value after putIfAbsent when changed: [%,d] key '%s', prevValue '%s', newValue '%s'",
+                                        i, key, prevValue, newValue));
+                    }
+                }
+            } else {
+                try {
+                    // two possible exception here, either valid
+                    getMap().putIfAbsent(keys[0], newValues[0]);
+                    fail("Expected IllegalArgumentException or UnsupportedOperationException on putIfAbsent (change)");
+                } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
+                    // ignore
+                }
+            }
+        } else if (isPutChangeSupported()) {
+            resetEmpty();
+            try {
+                getMap().putIfAbsent(keys[0], values[0]);
+                fail("Expected UnsupportedOperationException or IllegalArgumentException on putIfAbsent (add) when fixed size");
+            } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
+                // ignore
+            }
+            resetFull();
+            int i = 0;
+            for (final Iterator<K> it = getMap().keySet().iterator(); it.hasNext() && i < newValues.length; i++) {
+                final K key = it.next();
+                final V newValue = newValues[i];
+                final boolean newValueAlready = getMap().containsValue(newValue);
+                final V prevValue = getMap().get(key);
+                final V oldValue = getMap().putIfAbsent(key, newValue);
+                final V value = getConfirmed().putIfAbsent(key, newValue);
+                verify();
+                assertEquals(value, oldValue, "Map.putIfAbsent should return previous value when changed");
+                assertEquals(prevValue, oldValue, "Map.putIfAbsent should return previous value when changed");
+                if (prevValue == null) {
+                    assertEquals(newValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                } else {
+                    assertEquals(oldValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                }
+                assertTrue(getMap().containsKey(key), "Map should still contain key after putIfAbsent when changed");
+                if (newValueAlready && newValue != null) {
+                    // TODO The test fixture already contain a null value, so we condition this assertion
+                    assertFalse(getMap().containsValue(newValue),
+                            String.format("[%,d] Map at '%s' shouldn't contain new value '%s' after putIfAbsent when changed", i, key, newValue));
+                }
+                // if duplicates are allowed, we're not guaranteed that the value
+                // no longer exists, so don't try checking that.
+                if (!isAllowDuplicateValues()) {
+                    assertFalse(getMap().containsValue(values[i]), "Map should not contain old value after putIfAbsent when changed");
+                }
+            }
+        } else {
+            assertThrows(UnsupportedOperationException.class, () -> getMap().putIfAbsent(keys[0], values[0]),
+                    "Expected UnsupportedOperationException on put (add)");
+        }
+    }
+
+    /**
      * Tests Map.put(null, value)
      */
     @Test
@@ -1657,6 +1809,22 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
         resetFull();
         assertNotNull(getMap().toString(), "Empty map toString() should not return null");
         verify();
+    }
+
+    /**
+     * Tests {@link Map#remove(Object, Object)}.
+     */
+    @Test
+    public void testRemoveKeyValue() {
+        assumeTrue(isRemoveSupported());
+        resetFull();
+        final K[] sampleKeys = getSampleKeys();
+        final V[] sampleValues = getSampleValues();
+        assertFalse(getMap().isEmpty());
+        for (int i = 0; i < sampleKeys.length; i++) {
+            assertTrue(getMap().remove(sampleKeys[i], sampleValues[i]));
+        }
+        assertTrue(getMap().isEmpty());
     }
 
     /**
