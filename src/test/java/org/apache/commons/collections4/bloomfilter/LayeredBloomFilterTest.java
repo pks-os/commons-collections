@@ -156,7 +156,7 @@ public class LayeredBloomFilterTest extends AbstractBloomFilterTest<LayeredBloom
      * @param maxDepth The maximum depth of layers.
      * @return An empty layered Bloom filter of the specified shape and depth.
      */
-    public static  LayeredBloomFilter<BloomFilter> fixed(final Shape shape, final int maxDepth) {
+    public static LayeredBloomFilter<BloomFilter> fixed(final Shape shape, final int maxDepth) {
         return fixed(shape, maxDepth, () -> new SimpleBloomFilter(shape));
     }
 
@@ -233,8 +233,8 @@ public class LayeredBloomFilterTest extends AbstractBloomFilterTest<LayeredBloom
         final LayerManager layerManager = LayerManager.builder()
                 .setSupplier(() -> new NumberedBloomFilter(getTestShape(), 3, sequence[0]++))
                 .setExtendCheck(ExtendCheck.neverAdvance())
-                .setCleanup(ll -> ll.removeIf( f -> (((NumberedBloomFilter) f).value-- == 0))).get();
-        final LayeredBloomFilter underTest = new LayeredBloomFilter(getTestShape(), layerManager );
+                .setCleanup(ll -> ll.removeIf(f -> (((NumberedBloomFilter) f).value-- == 0))).get();
+        final LayeredBloomFilter underTest = new LayeredBloomFilter(getTestShape(), layerManager);
         assertEquals(1, underTest.getDepth());
         underTest.merge(TestingHashers.randomHasher());
         underTest.cleanup(); // first count == 2

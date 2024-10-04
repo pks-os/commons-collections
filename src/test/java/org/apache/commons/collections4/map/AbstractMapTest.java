@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.AbstractObjectTest;
@@ -53,7 +54,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Abstract test class for {@link java.util.Map} methods and contracts.
+ * Tests {@link java.util.Map}.
  * <p>
  * The forces at work here are similar to those in {@link AbstractCollectionTest}. If your class implements the full Map interface, including optional
  * operations, simply extend this class, and implement the {@link #makeObject()} method.
@@ -132,10 +133,11 @@ import org.junit.jupiter.api.Test;
  * {@link #isAllowDuplicateValues()} and have it return {@code false}
  * </p>
  *
+ * @param <M> the Map type.
  * @param <K> the key type.
  * @param <V> the value type.
  */
-public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
+public abstract class AbstractMapTest<M extends Map<K, V>, K, V> extends AbstractObjectTest {
 
     public class TestMapEntrySet extends AbstractSetTest<Map.Entry<K, V>> {
         public TestMapEntrySet() {
@@ -514,7 +516,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
     }
 
     /** Map created by reset(). */
-    protected Map<K, V> map;
+    protected M map;
 
     /** Entry set of map created by reset(). */
     protected Set<Map.Entry<K, V>> entrySet;
@@ -597,6 +599,17 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
         return new TestMapValues();
     }
 
+    /**
+     * Subclasses can override for special cases, like Apache Commons BeanUtils.
+     *
+     * @param key             See @{link {@link Map#computeIfAbsent(Object, Function)}.
+     * @param mappingFunction See @{link {@link Map#computeIfAbsent(Object, Function)}.
+     * @return See @{link {@link Map#computeIfAbsent(Object, Function)}.
+     */
+    protected V computeIfAbsent(final K key, final Function<? super K, ? extends V> mappingFunction) {
+        return getMap().computeIfAbsent(key, mappingFunction);
+    }
+
     @SuppressWarnings("unchecked")
     protected <E> List<E> getAsList(final Object[] o) {
         final ArrayList<E> result = new ArrayList<>();
@@ -639,7 +652,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      *
      * @return Map<K, V>
      */
-    public Map<K, V> getMap() {
+    public M getMap() {
         return map;
     }
 
@@ -707,6 +720,9 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} supports duplicate values.
      * <p>
      * Default implementation returns true. Override if your collection class does not support duplicate values.
+     * </p>
+     *
+     * @return true by default.
      */
     public boolean isAllowDuplicateValues() {
         return true;
@@ -716,6 +732,9 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} supports null keys.
      * <p>
      * Default implementation returns true. Override if your collection class does not support null keys.
+     * </p>
+     *
+     * @return true by default.
      */
     public boolean isAllowNullKey() {
         return true;
@@ -736,6 +755,8 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * <p>
      * Default implementation returns true. Override if your collection class does not support null values.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isAllowNullValueGet() {
         return true;
@@ -746,6 +767,8 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * <p>
      * Default implementation returns true. Override if your collection class does not support null values.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isAllowNullValuePut() {
         return true;
@@ -756,6 +779,8 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * <p>
      * Default implementation returns true. Override if your collection class does not support fast failure.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isFailFastExpected() {
         return true;
@@ -767,12 +792,10 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * <p>
      * Default implementation returns false. Override if your map class structurally modifies on get.
      * </p>
+     *
+     * @return false by default.
      */
     public boolean isGetStructuralModify() {
-        return false;
-    }
-
-    protected boolean isLazyMapTest() {
         return false;
     }
 
@@ -781,35 +804,58 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
     // exhaustively recheck things that have already been checked in a previous
     // test methods.
 
+    protected boolean isLazyMapTest() {
+        return false;
+    }
+
     /**
-     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@code put} and {@code putAll} operations adding new
-     * mappings.
+     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@link Map#put(Object, Object)} and
+     * {@link Map#putAll(Map)} operations adding new mappings.
      * <p>
      * Default implementation returns true. Override if your collection class does not support put adding.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isPutAddSupported() {
         return true;
     }
 
     /**
-     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@code put} and {@code putAll} operations changing
-     * existing mappings.
+     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@link Map#put(Object, Object)} and
+     * {@link Map#putAll(Map)} operations changing existing mappings.
      * <p>
      * Default implementation returns true. Override if your collection class does not support put changing.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isPutChangeSupported() {
         return true;
     }
 
     /**
-     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@code remove} and {@code clear} operations.
+     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@code remove} and {@link Map#clear()} operations.
      * <p>
      * Default implementation returns true. Override if your collection class does not support removal operations.
      * </p>
+     *
+     * @return true by default.
      */
     public boolean isRemoveSupported() {
+        return true;
+    }
+
+    /**
+     * Returns true if the maps produced by {@link #makeObject()} and {@link #makeFullMap()} support the {@link Map#replaceAll(java.util.function.BiFunction)}
+     * operations.
+     * <p>
+     * Default implementation returns true. Override if your collection class does not support replaceAll operations.
+     * </p>
+     *
+     * @return true by default.
+     */
+    public boolean isReplaceAllSupported() {
         return true;
     }
 
@@ -827,7 +873,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * Returns whether the sub map views of SortedMap are serializable. If the class being tested is based around a TreeMap then you should override and return
      * false as TreeMap has a bug in deserialization.
      *
-     * @return false
+     * @return true by default.
      */
     public boolean isSubMapViewsSerializable() {
         return true;
@@ -866,8 +912,8 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      *
      * @return the map to be tested
      */
-    public Map<K, V> makeFullMap() {
-        final Map<K, V> m = makeObject();
+    public M makeFullMap() {
+        final M m = makeObject();
         addSampleMappings(m);
         return m;
     }
@@ -878,7 +924,18 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      * @return the map to be tested
      */
     @Override
-    public abstract Map<K, V> makeObject();
+    public abstract M makeObject();
+
+    /**
+     * Subclasses can override for special cases, like Apache Commons BeanUtils.
+     *
+     * @param key   See @{link {@link Map#putIfAbsent(Object, Object)}.
+     * @param value See @{link {@link Map#putIfAbsent(Object, Object)}.
+     * @return See @{link {@link Map#putIfAbsent(Object, Object)}.
+     */
+    protected V putIfAbsent(final K key, final V value) {
+        return getMap().putIfAbsent(key, value);
+    }
 
     /**
      * Resets the {@link #map}, {@link #entrySet}, {@link #keySet}, {@link #values} and {@link #confirmed} fields to empty.
@@ -1369,7 +1426,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                 final V value = values[i];
                 final boolean expectKey = key != null && value != null || key == null && !getMap().containsKey(key);
                 final Map<K, V> oldMap = new HashMap<>(getMap());
-                final Object currValue = getMap().computeIfAbsent(key, k -> value);
+                final Object currValue = computeIfAbsent(key, k -> value);
                 // map is updated if new value is not null
                 getConfirmed().computeIfAbsent(key, k -> value);
                 if (!isLazyMapTest()) {
@@ -1397,7 +1454,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                     final boolean valueAlreadyPresent = getMap().containsValue(value);
                     final V prevValue = getMap().get(key);
                     final Map<K, V> oldMap = new HashMap<>(getMap());
-                    final Object computedValue = getMap().computeIfAbsent(key, k -> value);
+                    final Object computedValue = computeIfAbsent(key, k -> value);
                     getConfirmed().computeIfAbsent(key, k -> value);
                     if (!isLazyMapTest()) {
                         // TODO LazyMap tests do not like this check
@@ -1406,7 +1463,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                     final V arrValue = values[i];
                     final Supplier<String> messageSupplier = () -> String.format("[%,d] map.computeIfAbsent key '%s', value '%s', old %s", inc.get(), key,
                             value, oldMap);
-                    if (valueAlreadyPresent || (key == null)) {
+                    if (valueAlreadyPresent || key == null) {
                         assertNotEquals(value, computedValue, messageSupplier);
                     } else if (prevValue != null && value != null) {
                         assertEquals(prevValue, computedValue, messageSupplier);
@@ -1437,7 +1494,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
             } else {
                 try {
                     // two possible exception here, either valid
-                    getMap().computeIfAbsent(keys[0], k -> newValues[0]);
+                    computeIfAbsent(keys[0], k -> newValues[0]);
                     fail("Expected IllegalArgumentException or UnsupportedOperationException on putIfAbsent (change)");
                 } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
                     // ignore
@@ -1446,7 +1503,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
         } else if (isPutChangeSupported()) {
             resetEmpty();
             try {
-                getMap().computeIfAbsent(keys[0], k -> values[0]);
+                computeIfAbsent(keys[0], k -> values[0]);
                 fail("Expected UnsupportedOperationException or IllegalArgumentException on putIfAbsent (add) when fixed size");
             } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
                 // ignore
@@ -1581,52 +1638,53 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
             } else {
                 try {
                     // two possible exception here, either valid
-                    getMap().computeIfAbsent(keys[0], k -> newValues[0]);
+                    getMap().computeIfPresent(keys[0], (k, v) -> newValues[0]);
                     fail("Expected IllegalArgumentException or UnsupportedOperationException on putIfAbsent (change)");
                 } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
                     // ignore
                 }
             }
         } else if (isPutChangeSupported()) {
+            // compute if present is a put.
             resetEmpty();
-            try {
-                getMap().computeIfAbsent(keys[0], k -> values[0]);
-                fail("Expected UnsupportedOperationException or IllegalArgumentException on putIfAbsent (add) when fixed size");
-            } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
-                // ignore
-            }
-            resetFull();
-            int i = 0;
-            for (final Iterator<K> it = getMap().keySet().iterator(); it.hasNext() && i < newValues.length; i++) {
-                final K key = it.next();
-                final V newValue = newValues[i];
-                final boolean newValueAlready = getMap().containsValue(newValue);
-                final V prevValue = getMap().get(key);
-                final V oldValue = getMap().putIfAbsent(key, newValue);
-                final V value = getConfirmed().putIfAbsent(key, newValue);
-                verify();
-                assertEquals(value, oldValue, "Map.putIfAbsent should return previous value when changed");
-                assertEquals(prevValue, oldValue, "Map.putIfAbsent should return previous value when changed");
-                if (prevValue == null) {
-                    assertEquals(newValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
-                } else {
-                    assertEquals(oldValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
-                }
-                assertTrue(getMap().containsKey(key), "Map should still contain key after putIfAbsent when changed");
-                if (newValueAlready && newValue != null) {
-                    // TODO The test fixture already contain a null value, so we condition this assertion
-                    assertFalse(getMap().containsValue(newValue),
-                            String.format("[%,d] Map at '%s' shouldn't contain new value '%s' after putIfAbsent when changed", i, key, newValue));
-                }
-                // if duplicates are allowed, we're not guaranteed that the value
-                // no longer exists, so don't try checking that.
-                if (!isAllowDuplicateValues()) {
-                    assertFalse(getMap().containsValue(values[i]), "Map should not contain old value after putIfAbsent when changed");
+            getMap().computeIfPresent(keys[0], (k, v) -> values[0]);
+            if (isPutAddSupported()) {
+                resetFull();
+                int i = 0;
+                for (final Iterator<K> it = getMap().keySet().iterator(); it.hasNext() && i < newValues.length; i++) {
+                    final K key = it.next();
+                    final V newValue = newValues[i];
+                    final boolean newValueAlready = getMap().containsValue(newValue);
+                    final V prevValue = getMap().get(key);
+                    final V oldValue = getMap().computeIfPresent(key, (k, v) -> newValue);
+                    final V value = getConfirmed().computeIfPresent(key, (k, v) -> newValue);
+                    verify();
+                    assertEquals(value, oldValue, "Map.putIfAbsent should return previous value when changed");
+                    assertEquals(prevValue, oldValue, "Map.putIfAbsent should return previous value when changed");
+                    if (prevValue == null) {
+                        assertEquals(newValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                    } else {
+                        assertEquals(oldValue, getMap().get(key), String.format("[%,d] key '%s', prevValue '%s', newValue '%s'", i, key, prevValue, newValue));
+                    }
+                    assertTrue(getMap().containsKey(key), "Map should still contain key after putIfAbsent when changed");
+                    if (newValueAlready && newValue != null) {
+                        // TODO The test fixture already contain a null value, so we condition this assertion
+                        assertFalse(getMap().containsValue(newValue),
+                                String.format("[%,d] Map at '%s' shouldn't contain new value '%s' after putIfAbsent when changed", i, key, newValue));
+                    }
+                    // if duplicates are allowed, we're not guaranteed that the value
+                    // no longer exists, so don't try checking that.
+                    if (!isAllowDuplicateValues()) {
+                        assertFalse(getMap().containsValue(values[i]), "Map should not contain old value after putIfAbsent when changed");
+                    }
                 }
             }
-        } else {
-            assertThrows(UnsupportedOperationException.class, () -> getMap().putIfAbsent(keys[0], values[0]),
+        } else if (getMap().containsKey(keys[0])) {
+            assertThrows(UnsupportedOperationException.class, () -> getMap().computeIfPresent(keys[0], (k, v) -> values[0]),
                     "Expected UnsupportedOperationException on put (add)");
+        } else {
+            // doesn't throw
+            getMap().computeIfPresent(keys[0], (k, v) -> values[0]);
         }
     }
 
@@ -1944,7 +2002,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
             for (int i = 0; i < keys.length; i++) {
                 final K key = keys[i];
                 final V value = values[i];
-                final Object o = getMap().putIfAbsent(key, value);
+                final Object o = putIfAbsent(key, value);
                 getConfirmed().putIfAbsent(key, value);
                 verify();
                 assertNull(o, "First map.putIfAbsent should return null");
@@ -1958,7 +2016,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                     final V newValue = newValues[i];
                     final boolean newValueAlready = getMap().containsValue(newValue);
                     final V prevValue = getMap().get(key);
-                    final Object oldValue = getMap().putIfAbsent(key, newValue);
+                    final Object oldValue = putIfAbsent(key, newValue);
                     getConfirmed().putIfAbsent(key, newValue);
                     verify();
                     final V arrValue = values[i];
@@ -1986,7 +2044,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
             } else {
                 try {
                     // two possible exception here, either valid
-                    getMap().putIfAbsent(keys[0], newValues[0]);
+                    putIfAbsent(keys[0], newValues[0]);
                     fail("Expected IllegalArgumentException or UnsupportedOperationException on putIfAbsent (change)");
                 } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
                     // ignore
@@ -1994,11 +2052,21 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
             }
         } else if (isPutChangeSupported()) {
             resetEmpty();
-            try {
-                getMap().putIfAbsent(keys[0], values[0]);
-                fail("Expected UnsupportedOperationException or IllegalArgumentException on putIfAbsent (add) when fixed size");
-            } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
-                // ignore
+            final K key0 = keys[0];
+            final V value0 = values[0];
+            if (getMap().containsKey(key0)) {
+                // don't throw
+                assertEquals(getMap().get(key0), putIfAbsent(key0, value0));
+            } else if (isPutAddSupported()) {
+                putIfAbsent(key0, value0);
+            } else {
+                // throw (fixed size for example)
+                try {
+                    putIfAbsent(key0, value0);
+                    fail("Expected UnsupportedOperationException or IllegalArgumentException on putIfAbsent (add) when fixed size");
+                } catch (final IllegalArgumentException | UnsupportedOperationException ex) {
+                    // ignore
+                }
             }
             resetFull();
             int i = 0;
@@ -2007,7 +2075,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                 final V newValue = newValues[i];
                 final boolean newValueAlready = getMap().containsValue(newValue);
                 final V prevValue = getMap().get(key);
-                final V oldValue = getMap().putIfAbsent(key, newValue);
+                final V oldValue = putIfAbsent(key, newValue);
                 final V value = getConfirmed().putIfAbsent(key, newValue);
                 verify();
                 assertEquals(value, oldValue, "Map.putIfAbsent should return previous value when changed");
@@ -2030,8 +2098,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
                 }
             }
         } else {
-            assertThrows(UnsupportedOperationException.class, () -> getMap().putIfAbsent(keys[0], values[0]),
-                    "Expected UnsupportedOperationException on put (add)");
+            assertThrows(UnsupportedOperationException.class, () -> putIfAbsent(keys[0], values[0]), "Expected UnsupportedOperationException on put (add)");
         }
     }
 
@@ -2172,7 +2239,7 @@ public abstract class AbstractMapTest<K, V> extends AbstractObjectTest {
      */
     @Test
     public void testReplaceAll() {
-        assumeTrue(isSetValueSupported());
+        assumeTrue(isSetValueSupported() && isReplaceAllSupported());
         resetFull();
         final V[] newValues = getNewSampleValues();
         assertFalse(getMap().isEmpty());
