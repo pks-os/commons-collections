@@ -14,30 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.commons.collections4.bloomfilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the {@link SimpleBloomFilter}.
+ * Tests {@link BloomFilterExtractor}.
  */
-public class SimpleBloomFilterTest extends AbstractBloomFilterTest<SimpleBloomFilter> {
-
-    @Override
-    protected SimpleBloomFilter createEmptyFilter(final Shape shape) {
-        return new SimpleBloomFilter(shape);
-    }
+public class BloomFilterExtractorTest {
 
     @Test
-    public void testMergeShortBitMapExtractor() {
-        final SimpleBloomFilter filter = createEmptyFilter(getTestShape());
-        // create a bitMapExtractor that returns too few values
-        // shape expects 2 longs we are sending 1.
-        final BitMapExtractor bitMapExtractor = p -> p.test(2L);
-        assertTrue(filter.merge(bitMapExtractor));
-        assertEquals(1, filter.cardinality());
+    @Disabled
+    public void testFlattenEmpty() {
+        // TODO ?
+        assertNotNull(BloomFilterExtractor.fromBloomFilterArray(new BloomFilter[0]).flatten());
     }
+
 }
