@@ -35,6 +35,8 @@
     <action type="fix" dev="ggregory" due-to="Gary Gregory">[Functional] FunctorUtils.validate(Transformer...) is now FunctorUtils.validate(Function...).</action>
     <action type="fix" dev="ggregory" due-to="Dávid Szigecsán. Gary Gregory">Increase test coverage for ListUtils #517.</action>
     <action type="fix" dev="ggregory" due-to="Dávid Szigecsán">Use the Junit (Jupiter) API #518.</action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory, Alex Herbert">BloomFilterExtractor.flatten() should throw an exception instead of returning null.</action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory, Claude Warren">Improve WrappedBloomFilterTest. All tests now assert copy() the same way.</action>
     <!-- ADD -->
     <action type="add" dev="ggregory" due-to="Gary Gregory">LayerManager.Builder implements Supplier.</action>
     <action type="add" dev="ggregory" due-to="Gary Gregory, hemanth0525">Add CollectionUtils.duplicateList(Collection).</action>
@@ -44,7 +46,7 @@
     <action type="add" dev="ggregory" due-to="Gary Gregory">Add TreeBag.TreeBag(Iterable).</action>
     <action type="add" issue="COLLECTIONS-858" dev="ggregory" due-to="Alexey Pelykh, Alex Herbert, Gary Gregory">Add CartesianProductIterator #509.</action>
     <action type="add" dev="ggregory" due-to="Gary Gregory">Add missing methods in AbstractMapTests.</action>
-    <action type="add" dev="ggregory" due-to="Gary Gregory">Add ConcurrentReferenceHashMap.</action>
+    <action type="add" issue="COLLECTIONS-700" dev="ggregory" due-to="Gary Gregory">Add ConcurrentReferenceHashMap.</action>
     <!-- UPDATE -->
     <action type="update" issue="COLLECTIONS-857" dev="ggregory" due-to="Claude Warren">Update bloom filter documentation #508.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.17.0 to 1.17.1 #514.</action>
