@@ -222,34 +222,35 @@ public class CollectionUtils {
     /**
      * The index value when an element is not found in a collection or array: {@code -1}.
      *
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static final int INDEX_NOT_FOUND = -1;
+
     /**
      * Default prefix used while converting an Iterator to its String representation.
      *
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static final String DEFAULT_TOSTRING_PREFIX = "[";
 
     /**
      * Default suffix used while converting an Iterator to its String representation.
      *
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static final String DEFAULT_TOSTRING_SUFFIX = "]";
 
     /**
      * A String for Colon  (":").
      *
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static final String COLON = ":";
 
     /**
      * A String for Comma (",").
      *
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static final String COMMA = ",";
 
@@ -461,11 +462,9 @@ public class CollectionUtils {
      */
     public static <O> List<O> collate(final Iterable<? extends O> iterableA, final Iterable<? extends O> iterableB,
                                       final Comparator<? super O> comparator, final boolean includeDuplicates) {
-
         Objects.requireNonNull(iterableA, "iterableA");
         Objects.requireNonNull(iterableB, "iterableB");
         Objects.requireNonNull(comparator, "comparator");
-
         // if both Iterables are a Collection, we can estimate the size
         final int totalSize = iterableA instanceof Collection<?> && iterableB instanceof Collection<?> ?
                 Math.max(1, ((Collection<?>) iterableA).size() + ((Collection<?>) iterableB).size()) : 10;
@@ -475,7 +474,6 @@ public class CollectionUtils {
             return IteratorUtils.toList(iterator, totalSize);
         }
         final ArrayList<O> mergedList = new ArrayList<>(totalSize);
-
         O lastItem = null;
         while (iterator.hasNext()) {
             final O item = iterator.next();
@@ -484,7 +482,6 @@ public class CollectionUtils {
             }
             lastItem = item;
         }
-
         mergedList.trimToSize();
         return mergedList;
     }
@@ -1133,7 +1130,7 @@ public class CollectionUtils {
      * @param equator  the equator used for generate hashCode
      * @return the hash code of the input collection using the hash method of an equator
      * @throws NullPointerException if the equator is {@code null}
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static <E> int hashCode(final Collection<? extends E> collection,
             final Equator<? super E> equator) {
@@ -1539,7 +1536,7 @@ public class CollectionUtils {
      * @param count  the specified number to remove, can't be less than 1
      * @return collection of elements that removed from the input collection
      * @throws NullPointerException if input is null
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static <E> Collection<E> removeCount(final Collection<E> input, int startIndex, int count) {
         Objects.requireNonNull(input, "input");
@@ -1580,7 +1577,7 @@ public class CollectionUtils {
      * @param endIndex  the end index (exclusive) to remove, must not be less than startIndex
      * @return collection of elements that removed from the input collection
      * @throws NullPointerException if input is null
-     * @since 4.5.0
+     * @since 4.5.0-M1
      */
     public static <E> Collection<E> removeRange(final Collection<E> input, final int startIndex, final int endIndex) {
         Objects.requireNonNull(input, "input");

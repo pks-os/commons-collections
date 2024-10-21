@@ -150,6 +150,8 @@ public class SingletonMap<K, V>
     /**
      * Values implementation for the SingletonMap.
      * This class is needed as values is a view that must update as the map updates.
+     *
+     * @param <V> the type of the values in this set.
      */
     static class SingletonValues<V> extends AbstractSet<V> implements Serializable {
         private static final long serialVersionUID = -3689524741863047872L;
@@ -488,6 +490,7 @@ public class SingletonMap<K, V>
      * <p>
      * An IllegalArgumentException is thrown if the key does not match as the map
      * is fixed size.
+     * </p>
      *
      * @param key  the key to set, must be the key of the map
      * @param value  the value to set
@@ -508,6 +511,7 @@ public class SingletonMap<K, V>
      * The map must be of size 0 or size 1.
      * If it is size 1, the key must match the key of this map otherwise an
      * IllegalArgumentException is thrown.
+     * </p>
      *
      * @param map  the map to add, must be size 0 or 1, and the key must match
      * @throws NullPointerException if the map is null

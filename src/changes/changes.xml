@@ -40,6 +40,10 @@
     <action type="fix" dev="ggregory" due-to="Gary Gregory,  Daniele" issue="COLLECTIONS-860">Javadoc CollectionBag.add* to throw ClassCastException.</action>
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix generics in IteratorChain.IteratorChain(Collection).</action>
     <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix generics in org.apache.commons.collections4.IteratorUtils.chainedIterator(Collection).</action>
+    <action type="fix" dev="ggregory" due-to="Benjamin Confino, Gary Gregory" issue="COLLECTIONS-856">Javadoc: Document interaction between peek and filter iterator #515.</action>
+    <action type="fix" dev="ggregory" due-to="Elia Bertolina, Gary Gregory" issue="COLLECTIONS-815">Javadoc: Update ClosureUtils Javadoc to match runtime.</action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory" issue="COLLECTIONS-815">Javadoc: Update ClosureUtils Javadoc to match runtime.</action>
+    <action type="fix" dev="ggregory" due-to="Gary Gregory" issue="COLLECTIONS-777">Migrate to JUnit 5.</action>
     <!-- ADD -->
     <action type="add" dev="ggregory" due-to="Gary Gregory">LayerManager.Builder implements Supplier.</action>
     <action type="add" dev="ggregory" due-to="Gary Gregory, hemanth0525">Add CollectionUtils.duplicateList(Collection).</action>
@@ -52,7 +56,7 @@
     <action type="add" issue="COLLECTIONS-700" dev="ggregory" due-to="Gary Gregory">Add ConcurrentReferenceHashMap.</action>
     <action type="add" dev="ggregory" due-to="Gary Gregory">Add commons.easymock.version to parameterize EasyMock version.</action>
     <action type="add" issue="COLLECTIONS-869" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.collections4.IteratorUtils.chainedIterator(Iterator&lt;? extends Iterator&lt;? extends E&gt;&gt;).</action>
-
+    <action type="add" dev="ggregory" due-to="Peter De Maeyer" issue="COLLECTIONS-533">Add ArrayListValuedLinkedHashMap #560.</action> 
     <!-- UPDATE -->
     <action type="update" issue="COLLECTIONS-857" dev="ggregory" due-to="Claude Warren">Update bloom filter documentation #508.</action>
     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.17.0 to 1.17.1 #514.</action>
