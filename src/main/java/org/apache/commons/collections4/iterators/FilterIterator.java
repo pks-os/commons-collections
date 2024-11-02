@@ -32,7 +32,7 @@ import org.apache.commons.collections4.functors.TruePredicate;
  * @param <E> the type of elements returned by this iterator.
  * @since 1.0
  */
-public class FilterIterator<E> implements Iterator<E> {
+public class FilterIterator<E> implements IteratorOperations<E> {
 
     /** The iterator to be filtered. */
     private Iterator<? extends E> iterator;
