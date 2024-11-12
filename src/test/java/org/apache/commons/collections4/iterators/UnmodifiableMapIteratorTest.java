@@ -38,10 +38,6 @@ import org.junit.jupiter.api.Test;
  */
 public class UnmodifiableMapIteratorTest<K, V> extends AbstractMapIteratorTest<K, V> {
 
-    public UnmodifiableMapIteratorTest() {
-        super(UnmodifiableMapIteratorTest.class.getSimpleName());
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public Map<K, V> getConfirmedMap() {

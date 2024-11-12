@@ -39,10 +39,6 @@ public class SingletonMapTest<K, V> extends AbstractOrderedMapTest<K, V> {
     private static final Integer TWO = Integer.valueOf(2);
     private static final String TEN = "10";
 
-    public SingletonMapTest() {
-        super(SingletonMapTest.class.getSimpleName());
-    }
-
     @Override
     public String getCompatibilityVersion() {
         return "4";
@@ -64,16 +60,6 @@ public class SingletonMapTest<K, V> extends AbstractOrderedMapTest<K, V> {
     @SuppressWarnings("unchecked")
     public V[] getSampleValues() {
         return (V[]) new Object[] { TWO };
-    }
-
-    @Override
-    public String[] ignoredTests() {
-        // the ridiculous map above still doesn't pass these tests
-        // but it's not relevant, so we ignore them
-        return new String[] {
-            "SingletonMapTest.bulkTestMapIterator.testEmptyMapIterator",
-            "SingletonMapTest.bulkTestOrderedMapIterator.testEmptyMapIterator",
-        };
     }
 
     @Override
